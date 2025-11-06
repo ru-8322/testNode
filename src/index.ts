@@ -7,12 +7,12 @@ const app = express();
 
 // Load env variables
 const PORT: any = process.env.PORT || 3000;
-const APP_NAME = process.env.APP_NAME || "My Node App with CICD with githubs action";
+const APP_NAME = process.env.APP_NAME || "My Node App with CICD | All is well sir";
 
 // Dummy route
 app.get("/", (req: Request, res: Response) => {
     res.json({
-        message: `🚀 Hello from ${APP_NAME}! Rupam`,
+        message: `🚀 Hello from ${APP_NAME}! Rupam Gupta`,
         port: PORT,
         time: new Date().toISOString(),
     });
