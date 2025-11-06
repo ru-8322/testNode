@@ -12,7 +12,7 @@ const APP_NAME = process.env.APP_NAME || "My Node App with CICD | All is well si
 // Dummy route
 app.get("/", (req: Request, res: Response) => {
     res.json({
-        message: `🚀 Hello from ${APP_NAME}! Rupam Gupta`,
+        message: `🚀 Hello ------------------- from ${APP_NAME}! Rupam Gupta`,
         port: PORT,
         time: new Date().toISOString(),
     });
