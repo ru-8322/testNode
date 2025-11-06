@@ -1,32 +1,43 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
-
-name: Node.js CI
+name: Deploy Node.js App (Self-Hosted Runner)
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main" ]  # Trigger on push to main
 
 jobs:
-  build:
-
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [22.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+  build-and-deploy:
+    runs-on: self-hosted
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - run: |
-        touch .env
-        echo "${{ secrets.PROD_ENV_FILE }}" > .env
-    - run: npm run build --if-present
-    - run: pm2 restart BackendAPI
+      # 1️⃣ Checkout code from repo
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2️⃣ Setup Node.js 22
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      # 3️⃣ Install dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # 4️⃣ Create .env file from GitHub secret
+      - name: Create .env file
+        run: |
+          touch .env
+          echo "${{ secrets.PROD_ENV_FILE }}" > .env
+
+      # 5️⃣ Build project (TypeScript → JavaScript)
+      - name: Build project
+        run: npm run build --if-present
+
+      # 6️⃣ Restart app with PM2
+      - name: Restart Node.js app using PM2
+        run: |
+          pm2 delete BackendAPI || true
+          pm2 start dist/index.js --name BackendAPI
+          pm2 save
+          pm2 startup systemd -u ubuntu --hp /home/ubuntu
