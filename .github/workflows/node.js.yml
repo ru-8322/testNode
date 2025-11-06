@@ -2,14 +2,14 @@ name: Deploy Node.js App (Self-Hosted Runner)
 
 on:
   push:
-    branches: [ "main" ]  # Trigger on push to main
+    branches: [ "main" ]
 
 jobs:
   build-and-deploy:
     runs-on: self-hosted
 
     steps:
-      # 1️⃣ Checkout code from repo
+      # 1️⃣ Checkout code
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -39,5 +39,4 @@ jobs:
         run: |
           pm2 delete BackendAPI || true
           pm2 start dist/index.js --name BackendAPI
-          pm2 save
-          pm2 startup systemd -u ubuntu --hp /home/ubuntu
+          pm2 save || true
